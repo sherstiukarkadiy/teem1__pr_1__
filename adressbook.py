@@ -3,7 +3,6 @@ from fields import *
 from datetime import datetime
 
 
-
 class Record:
     def __init__(self, name: Name = str, phone: Phone = None, email: Email = None, birthday: Birthday = None):
         self.name = name
@@ -65,7 +64,7 @@ class AddressBook(UserDict):
                 for phone in result.phones:
                     print(f"Phone: {phone.value}")
                 if result.birthday:
-                    print(f"Birthday: {result.birthday.value.strftime('%Y-%m-%d')}")
+                    print(f"Birthday: {result.birthday.value.strftime('%d-%m-%Y')}")
             return results
         else:
             print("No results found.")
@@ -86,9 +85,9 @@ def new_contact():
     name = input("Enter the contact's name: ")
     phone = input("Enter the contact's phone number: ")
     email = input("Enter the contact's email: ")
-    birthday = input("Enter the contact's birthday (YYYY-MM-DD-): ")
+    birthday = input("Enter the contact's birthday (DD-MM-YYYY): ")
     return Record(Name(name), Phone(phone) if phone else None, Email(email) if email else None,
-                  Birthday(datetime.strptime(birthday, '%Y-%m-%d')) if birthday else None)
+                  Birthday(birthday) if birthday else None)
 
 
 def add_contact():
@@ -156,8 +155,16 @@ def change_email():
         print("No contact found with that name.")
 
 
+def day_birthday():
+    name = input("Enter the contact's name: ")
+    record = address_book.data.get(name)
+    if record:
+        day = record.days_to_birthday()
+        print(day)
+
+
 def delete():
-    deleted = input("Phone or User?").lower()
+    deleted = input("Phone or User? ").lower()
     if deleted.startswith("phone"):
         name = input("Enter the contact's name: ")
         phone = input("Enter the phone number to delete: ")
@@ -187,6 +194,7 @@ commands = {
     "change phone": change_phone,
     "change mail": change_email,
     "search": address_book.search,
+    "birthday": day_birthday,
     "delete": delete,
     "good bye": exit_command,
     "close": exit_command,
