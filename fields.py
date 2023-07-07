@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+
 class Field:
     def __init__(self, value):
         self.__value = value
@@ -16,7 +17,7 @@ class Field:
 
 class Name(Field):
     def __init__(self, name: str) -> None:
-        self.value = name
+        self.correct_name = name
 
     @property
     def correct_name(self):
@@ -24,14 +25,14 @@ class Name(Field):
 
     @correct_name.setter
     def correct_name(self, value):
-        if re.search(r"\w", value):
+        if re.search(r"\W", value):
             raise ValueError(f"Invalid name format: {value}")
         super().__init__(value)
 
 
 class Phone(Field):
     def __init__(self, number: str) -> None:
-        self.value = number
+        self.correct_phone = number
 
     @property
     def correct_phone(self):
@@ -47,7 +48,7 @@ class Phone(Field):
 
 class Email(Field):
     def __init__(self, email: str) -> None:
-        self.value = email
+        self.correct_email = email
 
     @property
     def correct_email(self):
@@ -63,7 +64,7 @@ class Email(Field):
 
 class Birthday(Field):
     def __init__(self, date) -> None:
-        self.value = date
+        self.correct_birthday = date
 
     @property
     def correct_birthday(self):
