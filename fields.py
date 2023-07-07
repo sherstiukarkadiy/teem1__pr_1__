@@ -63,7 +63,7 @@ class Email(Field):
 
 
 class Birthday(Field):
-    def __init__(self, date) -> None:
+    def __init__(self, date: str) -> None:
         self.correct_birthday = date
 
     @property
@@ -73,17 +73,14 @@ class Birthday(Field):
     @correct_birthday.setter
     def correct_birthday(self, date: str | object) -> None:
         date = str(date)
-        if date == "dd/mm/yyyy":
-            super().__init__(date)
-            return
-
+        # if date == "dd/mm/yyyy":
+        #     super().__init__(date)
+        #     return
         date = birthday_check(date)
         if not date:
             raise ValueError(f"Invalid birthday format: {date}")
         else:
-            day, month, year = map(int, date)
-            date = datetime(year=year, month=month, day=day)
-        super().__init__(date)
+            super().__init__(date)
 
     def __str__(self) -> str:
         if isinstance(self.value, datetime):
@@ -99,13 +96,13 @@ def phone_check(phone_number):
     if not phone_number.startswith("+380"):
         phone_number = "+380" + phone_number
 
-    if not phone_number.startswith("+38"):
+    elif not phone_number.startswith("+38"):
         phone_number = "+38" + phone_number
 
-    if not phone_number.startswith("+3"):
+    elif not phone_number.startswith("+3"):
         phone_number = "+3" + phone_number
 
-    if not phone_number.startswith("+"):
+    elif not phone_number.startswith("+"):
         phone_number = "+" + phone_number
 
     # Check all symbols are numbers
@@ -132,20 +129,22 @@ def email_check(email: str) -> bool:
 
 
 def birthday_check(date: str):
-    splitters = [".", ",", "/", " "]
+    splitters = [".", ",", "/", "-"]
     for sign in splitters:
-        date = date.replace(sign, "-")
+        date = date.replace(sign, " ")
 
-    __match = re.match(r"\d{2} \d{2} \d{4}", date)
+    __match = re.match(r"\d{2} \d{2} \d{4}\b", date)
     if not __match:
         return False
 
-    cur_year = datetime.now().year
+    day, month, year = map(int, date.split())
 
-    day, month, year = date.split()
-    if int(day) > 31 or int(month) > 12 or int(year) < 1900 or int(year) > cur_year:
+    try:
+        birthday = datetime(year, month, day)
+        return birthday
+
+    except:
         return False
-    return day, month, year
 
 
 def add_input_check(args: list) -> list | bool:
