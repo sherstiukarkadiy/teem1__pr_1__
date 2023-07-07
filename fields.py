@@ -41,9 +41,10 @@ class Phone(Field):
     @correct_phone.setter
     def correct_phone(self, value: str | object) -> None:
         value = str(value)
-        if phone_check(value):
-            raise ValueError(f"Invalid phone number format: {value}")
-        super().__init__(value)
+        check = phone_check(value)
+        if not check:
+            print((f"Invalid phone number format: {value}"))
+        super().__init__(check)
 
 
 class Email(Field):
@@ -78,7 +79,8 @@ class Birthday(Field):
         #     return
         date = birthday_check(date)
         if not date:
-            raise ValueError(f"Invalid birthday format: {date}")
+            print(f"Invalid birthday format: {date}")
+            return
         else:
             super().__init__(date)
 
@@ -108,13 +110,13 @@ def phone_check(phone_number):
     # Check all symbols are numbers
     if not phone_number[1:].isdigit():
         print('Number is not digit')
-        return True
+        return False
 
     if len(phone_number) != expected_length:
         print('Length of number is not correct')
-        return True
+        return False
 
-    return False
+    return phone_number
 
 
 def email_check(email: str) -> bool:
