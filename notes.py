@@ -58,8 +58,8 @@ class Notebook(UserDict):
                     record['Title'] = new_value
                 elif field.lower() == 'text':
                     record['Text'] = new_value
-                elif field == 'Tags':
-                    record['Tags'] = new_value if isinstance(new_value, list) else [new_value]
+                elif field == 'tags':
+                    record['Tags'] = [tag.strip() for tag in new_value.split(',')] 
                 else:
                     print(f"Invalid field '{field}'.")
             else:
