@@ -1,13 +1,12 @@
 from collections import UserDict
 from datetime import datetime, date
-import random
 
 class Notebook(UserDict):
     def __init__(self):
         self.data = {}
     
     def add(self, note):
-        note_id = ID(random.randint(100000, 999999))
+        note_id = ID()
         record = {'Title' : note.title,
                   'Text' : note.body, 
                   'Tags' : note.tags}
@@ -50,6 +49,31 @@ class Notebook(UserDict):
             print('There is no such note in notebook')
         return '\n'.join(result)
 
+    def delete(self, title):
+        for note_id, record in self.data.items():
+            if record['Title'].lower() == title.lower():
+                del self.data[note_id]
+                print(f"Note with title '{title}' deleted from notebook.")
+                return
+            else:
+                print(f"Note with title '{title}' does not exist in the notebook.")
+
+    def edit(self, title, field, new_value):
+        for note_id, record in self.data.items():
+            if title in record['Title']:
+                if field.lower() == 'title':
+                    record['Title'] = new_value
+                elif field.lower() == 'text':
+                    record['Text'] = new_value
+                elif field.lower() == 'tags':
+                    record['Tags'] = new_value
+                else:
+                    print(f"Invalid field '{field}'.")
+            else:
+                print(f"Note with Title {title} does not exist in the notebook.")
+
+
+
 class Note:
     def __init__(self, title, body, tags = None):
         self.title = title
@@ -60,8 +84,10 @@ class Note:
             self.tags = None
 
 class ID:
-    def __init__(self, value):
-        self.value = value
+    note_id = 10000 
+    def __init__(self):
+        self.value = ID.note_id
+        ID.note_id += 1
 
     def __getitem__(self):
         return self.value
@@ -110,6 +136,16 @@ class Handler:
             pattern = input('Search pattern: ')
             result = (self.notebook.search(pattern, category))
             print(result)
+        elif action == 'delete':
+            pattern = input('Please enter a Title of note you want to delete: ')
+            self.notebook.delete(pattern)
+        elif action == 'edit':
+            title = input("Please enter a Title of note you want to edit: ")
+            print("You can edit following fields: \nTitle \nText \nTags")
+            field = input('Enter a field: ')
+            new_value = input('Enter new value: ')
+            self.notebook.edit(title, field, new_value)
+            print("The note has been changed.")
         elif action == 'view':
             print(self.notebook)
         elif action == 'exit':
