@@ -18,7 +18,6 @@ class Notebook(UserDict):
             result.append("_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
         return '\n'.join(result)
 
-
     def search(self, pattern, category):
         result = []
         category_new = category.strip().lower().replace(' ', '')
@@ -72,8 +71,6 @@ class Notebook(UserDict):
             else:
                 print(f"Note with Title {title} does not exist in the notebook.")
 
-
-
 class Note:
     def __init__(self, title, body, tags = None):
         self.title = title
@@ -89,32 +86,20 @@ class ID:
         self.value = ID.note_id
         ID.note_id += 1
 
-    def __getitem__(self):
-        return self.value
-
     def __str__(self):
         return str(self.value)
 
 class Title(Note):
     def __init__(self, value):
         self.value = value
-    
-    def __getitem__(self):
-        return self.value
 
 class Body(Note):
     def __init__(self, value):
         self.value = value
 
-    def __getitem__(self):
-        return self.value
-
 class Tags(Note):
     def __init__(self, value):
         self.value = value
-
-    def __getitem__(self):
-        return self.value
 
 class Publication:
     pass
