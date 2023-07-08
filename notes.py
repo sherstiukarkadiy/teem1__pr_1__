@@ -9,44 +9,38 @@ class Notebook(UserDict):
         note_id = ID()
         record = {'Title' : note.title,
                   'Text' : note.body, 
-                  'Tags' : note.tags}
+                  'Tags' : note.tags,
+                  'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M')}
         self.data[note_id] = record
 
     def __str__(self):
         result = []
-        for note_id, record in self.data.items():
-            result.append("_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
+        for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
+            result.append(
+                "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
         return '\n'.join(result)
 
     def search(self, pattern, category):
         result = []
-        category_new = category.strip().lower().replace(' ', '')
+        category_new = category.strip().lower()
         pattern_new = pattern.strip().lower().replace(' ', '')
 
         for note_id, record in self.data.items():
             if category_new == 'title':
                 if record['Title'].lower().startswith(pattern_new):
-                    result.append("_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
-                elif record.get(category_new, '').lower().replace(' ', '') == pattern_new:
                     result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
-            if category_new == 'tags':
-                if record['Tags'].lower().startswith(pattern_new):
+                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+            elif category_new == 'tags':
+                if pattern_new in [tag.lower().replace(' ', '') for tag in record.get('Tags', [])]:
                     result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
-                elif record.get(category_new, '').lower().replace(' ', '') == pattern_new:
-                    result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
-            if category_new == 'text':
+                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+            elif category_new == 'text':
                 if record['Text'].lower().startswith(pattern_new):
                     result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
-                elif record.get(category_new, '').lower().replace(' ', '') == pattern_new:
-                    result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \n" + "_" * 50 + '\n')
+                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
         if not result:
             print('There is no such note in notebook')
-        return '\n'.join(result)
+        return 'Here is what we found for your request:\n' + '\n'.join(result)
 
     def delete(self, title):
         for note_id, record in self.data.items():
@@ -54,8 +48,8 @@ class Notebook(UserDict):
                 del self.data[note_id]
                 print(f"Note with title '{title}' deleted from notebook.")
                 return
-            else:
-                print(f"Note with title '{title}' does not exist in the notebook.")
+        else:
+            print(f"Note with title '{title}' does not exist in the notebook.")
 
     def edit(self, title, field, new_value):
         for note_id, record in self.data.items():
@@ -64,21 +58,18 @@ class Notebook(UserDict):
                     record['Title'] = new_value
                 elif field.lower() == 'text':
                     record['Text'] = new_value
-                elif field.lower() == 'tags':
-                    record['Tags'] = new_value
+                elif field == 'Tags':
+                    record['Tags'] = new_value if isinstance(new_value, list) else [new_value]
                 else:
                     print(f"Invalid field '{field}'.")
             else:
                 print(f"Note with Title {title} does not exist in the notebook.")
 
 class Note:
-    def __init__(self, title, body, tags = None):
+    def __init__(self, title, body, tags):
         self.title = title
         self.body = body
-        if tags is not None:
-            self.tags = tags
-        else:
-            self.tags = None
+        self.tags = [tag.strip() for tag in tags.split(',')]
 
 class ID:
     note_id = 10000 
@@ -88,6 +79,18 @@ class ID:
 
     def __str__(self):
         return str(self.value)
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __le__(self, other):
+        return self.value <= other.value
+
+    def __gt__(self, other):
+        return self.value > other.value
+
+    def __ge__(self, other):
+        return self.value >= other.value
 
 class Title(Note):
     def __init__(self, value):
@@ -100,9 +103,6 @@ class Body(Note):
 class Tags(Note):
     def __init__(self, value):
         self.value = value
-
-class Publication:
-    pass
 
 class Handler:
     def __init__(self):
@@ -140,7 +140,7 @@ class Handler:
 if __name__ == "__main__":
     print('Hello. I am your notebook')
     handler = Handler()
-    commands = ['Add','View', 'Exit', 'Search']
+    commands = ['Add','View', 'Search', 'Edit', 'Delete', 'Exit']
     while True:
         action = input(
             'Type help for list of commands or enter your command\n').strip().lower()
