@@ -35,7 +35,7 @@ class Name(Field):
     @correct_name.setter
     def correct_name(self, value):
         if re.search(r"\W", value):
-            raise ValueError(f"Invalid name format: {value}")
+            raise ValueError(f"Invalid name format: {value}. Try again.")
         super().__init__(value)
 
 
@@ -52,8 +52,7 @@ class Phone(Field):
         phone = str(phone)
         check = phone_check(phone)
         if check:
-            print(f'Phone {phone} is not right')
-            return
+            raise ValueError(f'Phone {phone} is not right, must be only numbers')
         super().__init__(check)
 
 
@@ -69,7 +68,7 @@ class Email(Field):
     def correct_email(self, email: str | object) -> None:
         email = str(email)
         if email_check(email):
-            print("Invalid mail")
+            raise ValueError("Invalid email format. Please, write in format 'mail@mail.com'")
         super().__init__(email)
 
 
@@ -86,8 +85,7 @@ class Birthday(Field):
         date = str(date)
         date = birthday_check(date)
         if not date:
-            print(f"Invalid birthday format")
-            return
+            raise ValueError("Invalid birthday format. Try firstly DAY, secondly MONTH, lastly YEARS")
         else:
             super().__init__(date)
 
@@ -123,7 +121,7 @@ def email_check(email: str) -> bool:
 
 
 def birthday_check(date: str):
-    splitters = [".", ",", "/", "-"]
+    splitters = [".", ",", "/", "-", ";", ":"]
     for sign in splitters:
         date = date.replace(sign, " ")
 
