@@ -38,6 +38,12 @@ class Record:
                 next_birthday = datetime(today.year + 1, self.birthday.value.month, self.birthday.value.day)
             return (next_birthday - today).days
 
+    def __repr__(self):
+        name = self.name
+        birth = str(self.birthday)
+        phones = f"{', '.join(map(str, self.phones))}"
+        emails = f"{', '.join(map(str, self.email))}"
+
 
 class AddressBook(UserDict):
 
@@ -199,8 +205,8 @@ commands = {
 
 
 def main():
-    command = input("Enter a command: ").lower()
     while True:
+        command = input("Enter a command: ").lower()
         if command in commands:
             func = commands[command]
             func()

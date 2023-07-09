@@ -134,9 +134,9 @@ def email_check(email: str) -> bool:
     email = re.search(reg, email)
 
     if not email:
-        return True
-    else:
         return False
+    else:
+        return True
 
 
 def birthday_check(date: str):
