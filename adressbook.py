@@ -42,6 +42,9 @@ class Record:
 class AddressBook(UserDict):
 
     def add_record(self, record):
+        if record.name.value in self.data:
+            print("Contact with the same name already exists.")
+            return
         self.data[record.name.value] = record
         print("Contact added successfully.")
 
@@ -75,10 +78,6 @@ address_book = AddressBook()
 
 def hello():
     return print("Hello! Enter command pls: ")
-
-
-def exit_command():
-    return print("Good bye!")
 
 
 def new_contact():
@@ -195,22 +194,22 @@ commands = {
     "change mail": change_email,
     "search": address_book.search,
     "birthday": day_birthday,
-    "delete": delete,
-    "good bye": exit_command,
-    "close": exit_command,
-    "exit": exit_command,
+    "delete": delete
 }
 
 
-def main(command):
-    if command in commands:
-        func = commands[command]
-        func()
-    else:
-        print("Invalid command")
+def main():
+    command = input("Enter a command: ").lower()
+    while True:
+        if command in commands:
+            func = commands[command]
+            func()
+        elif command.startswith("good bye") or command.startswith("close") or command.startswith("exit"):
+            print("Good bye!")
+            break
+        else:
+            print("Invalid command")
 
 
 if __name__ == '__main__':
-    while True:
-        command = input("Enter a command: ").lower()
-        main(command)
+    main()
