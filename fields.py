@@ -18,7 +18,7 @@ class Field:
         return f"{self.value}"
 
     def __eq__(self, __value: object) -> bool:
-        if self.value == __value.value:
+        if self.value == __value:
             return True
         else:
             return False
@@ -48,11 +48,11 @@ class Phone(Field):
         return super().value
 
     @correct_phone.setter
-    def correct_phone(self, value: str | object) -> None:
-        value = str(value)
-        check = phone_check(value)
+    def correct_phone(self, phone: str | object) -> None:
+        phone = str(phone)
+        check = phone_check(phone)
         if not check:
-            print((f"Invalid phone number format: {value}"))
+            print(f'Phone {phone} is not right')
         super().__init__(check)
 
 
@@ -68,7 +68,7 @@ class Email(Field):
     def correct_email(self, email: str | object) -> None:
         email = str(email)
         if email_check(email):
-            raise ValueError(f"Invalid email format: {email}")
+            print("Email is not correct")
         super().__init__(email)
 
 
@@ -83,9 +83,6 @@ class Birthday(Field):
     @correct_birthday.setter
     def correct_birthday(self, date: str | object) -> None:
         date = str(date)
-        # if date == "dd/mm/yyyy":
-        #     super().__init__(date)
-        #     return
         date = birthday_check(date)
         if not date:
             print(f"Invalid birthday format: {date}")

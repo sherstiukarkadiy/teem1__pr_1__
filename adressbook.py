@@ -43,6 +43,7 @@ class Record:
         birth = str(self.birthday)
         phones = f"{', '.join(map(str, self.phones))}"
         emails = f"{', '.join(map(str, self.email))}"
+        return f"Name: {name}\nBirthday: {birth}\nPhones: {phones}\nEmails: {emails}"
 
 
 class AddressBook(UserDict):
@@ -71,7 +72,11 @@ class AddressBook(UserDict):
             for result in results:
                 print(f"Name: {result.name.value}")
                 for phone in result.phones:
-                    print(f"Phone: {phone.value}")
+                    if phone is True:
+                        print(f"Phone: {phone.value}")
+                for email in result.email:
+                    if email is True:
+                        print(f"Email: {email.value}")
                 if result.birthday:
                     print(f"Birthday: {result.birthday.value.strftime('%d-%m-%Y')}")
             return results
@@ -132,12 +137,13 @@ def add_email():
 
 def change_phone():
     name = input("Enter the contact's name: ")
+    old_phone = input("Enter the old phone: ")
     phone = input("Enter the new phone number: ")
     record = address_book.data.get(name)
     if record:
         if phone:
             new_phone = Phone(phone)
-            record.edit_phone(record.phones[0], new_phone)
+            record.edit_phone(old_phone, new_phone)
             print("Phone number updated successfully.")
         else:
             print("Invalid input. Please provide a new phone number.")
@@ -147,12 +153,13 @@ def change_phone():
 
 def change_email():
     name = input("Enter the contact's name: ")
+    old_email = input("Enter the old email: ")
     email = input("Enter the new email: ")
     record = address_book.data.get(name)
     if record:
         if email:
             new_email = Email(email)
-            record.edit_email(record.email[0], new_email)
+            record.edit_email(old_email, new_email)
             print("Email updated successfully.")
         else:
             print("Invalid input. Please provide a email.")
@@ -169,7 +176,7 @@ def day_birthday():
 
 
 def delete():
-    deleted = input("Phone or User? ").lower()
+    deleted = input("Phone, Email or User? ").lower()
     if deleted.startswith("phone"):
         name = input("Enter the contact's name: ")
         phone = input("Enter the phone number to delete: ")
@@ -180,6 +187,17 @@ def delete():
             print("Phone number deleted successfully.")
         else:
             print("No matching phone number found.")
+
+    if deleted.startswith("phone"):
+        name = input("Enter the contact's name: ")
+        email = input("Enter the email to delete: ")
+        record = address_book.data.get(name)
+        email_to_delete = Email(email)
+        if email_to_delete in record.email:
+            record.delete_email(email_to_delete)
+            print("Email deleted successfully.")
+        else:
+            print("No matching email found.")
 
     elif deleted.startswith("user"):
         name = input("Enter the contact's name: ")
