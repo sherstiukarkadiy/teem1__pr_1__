@@ -31,7 +31,7 @@ def save_addressbook_to_csv(file_path, addressbook):
             phone_numbers = record.phone + [""] * (max_phone_count - len(record.phone))
             email_addresses = record.email + [""] * (max_email_count - len(record.email))
 
-            writer.writerow([str(record.name), record.birthday] + phone_numbers + email_addresses)
+            writer.writerow([str(record.name), record.birthday] + [str(phone) if phone else "N/A" for phone in phone_numbers] + [str(email) if email else "N/A" for email in email_addresses])
 
     print("Address book saved to CSV:", file_path)
 
@@ -61,3 +61,4 @@ def load_notes_from_json(file_path):
     with open(file_path, "r") as json_file:
         notes = json.load(json_file)
     return notes
+
