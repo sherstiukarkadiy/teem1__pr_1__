@@ -51,8 +51,9 @@ class Phone(Field):
     def correct_phone(self, phone: str | object) -> None:
         phone = str(phone)
         check = phone_check(phone)
-        if not check:
+        if check:
             print(f'Phone {phone} is not right')
+            return
         super().__init__(check)
 
 
@@ -68,7 +69,7 @@ class Email(Field):
     def correct_email(self, email: str | object) -> None:
         email = str(email)
         if email_check(email):
-            print("Email is not correct")
+            print("Invalid mail")
         super().__init__(email)
 
 
@@ -85,7 +86,7 @@ class Birthday(Field):
         date = str(date)
         date = birthday_check(date)
         if not date:
-            print(f"Invalid birthday format: {date}")
+            print(f"Invalid birthday format")
             return
         else:
             super().__init__(date)
@@ -98,31 +99,16 @@ class Birthday(Field):
 
 
 def phone_check(phone_number):
-    expected_length = 13
 
-    # Check if phone number begin with +380
-    if not phone_number.startswith("+380"):
-        phone_number = "+380" + phone_number
+    if phone_number.startswith("+"):
+        phone_number = phone_number[1:]
 
-    elif not phone_number.startswith("+38"):
-        phone_number = "+38" + phone_number
+    not_number = re.search(r'\D', phone_number)
 
-    elif not phone_number.startswith("+3"):
-        phone_number = "+3" + phone_number
-
-    elif not phone_number.startswith("+"):
-        phone_number = "+" + phone_number
-
-    # Check all symbols are numbers
-    if not phone_number[1:].isdigit():
-        print('Number is not digit')
+    if not_number:
+        return True
+    else:
         return False
-
-    if len(phone_number) != expected_length:
-        print('Length of number is not correct')
-        return False
-
-    return phone_number
 
 
 def email_check(email: str) -> bool:
@@ -130,10 +116,10 @@ def email_check(email: str) -> bool:
     reg = r"[a-z]\w+@([a-z]{2,}\.)+[a-z]{2,}\b"
     email = re.search(reg, email)
 
-    if email:
-        return False
-    else:
+    if not email:
         return True
+    else:
+        return False
 
 
 def birthday_check(date: str):
@@ -155,23 +141,3 @@ def birthday_check(date: str):
         return False
 
 
-def add_input_check(args: list) -> list | bool:
-    if len(args) != 2:
-        print(
-            "INVALID INPUT: Not enough or too much charecters, to use this comand enter <name> <phone\mail> separated by space")
-        return False
-    return args
-
-
-def invalid_show_input(args: list) -> str | bool:
-    if len(args) > 1:
-        print("INVALID INPUT: too much characters")
-        return True
-
-    try:
-        value = args[0]
-    except IndexError:
-        print("INVALID INPUT: No name were written")
-        return True
-
-    return value
