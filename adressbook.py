@@ -63,16 +63,42 @@ def hello():
     return print("Hello! Enter command pls: ")
 
 
-def new_contact():
-    # while True:
-    #     try:
-    name = input("Enter the contact's name: ")
-    phone = input("Enter the contact's phone number: ")
-    email = input("Enter the contact's email (mail@mail.com): ")
-    birthday = input("Enter the contact's birthday (DD-MM-YYYY): ")
+# def new_contact():
+#     while True:
+#         try:
+#             name = input("Enter the contact's name: ")
+#             phone = input("Enter the contact's phone number: ")
+#             email = input("Enter the contact's email (mail@mail.com): ")
+#             birthday = input("Enter the contact's birthday (DD-MM-YYYY): ")
+#             return Record(Name(name), Phone(phone) if phone else None, Email(email) if email else None,
+#                       Birthday(birthday) if birthday else None)
+#
+#         except ValueError as e:
+#             print(str(e))
 
-    return Record(Name(name), Phone(phone) if phone else None, Email(email) if email else None,
-                  Birthday(birthday) if birthday else None)
+def new_contact():
+    while True:
+        name = input("Enter the contact's name: ")
+        try:
+            phone = input("Enter the contact's phone number: ")
+            phone = Phone(phone) if phone else None
+        except ValueError as e:
+            print(str(e))
+            continue
+        try:
+            email = input("Enter the contact's email (mail@mail.com): ")
+            email = Email(email) if email else None
+        except ValueError as e:
+            print(str(e))
+            continue
+        try:
+            birthday = input("Enter the contact's birthday (DD-MM-YYYY): ")
+            birthday = Birthday(birthday) if birthday else None
+        except ValueError as e:
+            print(str(e))
+            continue
+
+        return Record(Name(name), phone, email, birthday)
 
 
 def add_contact():
@@ -82,9 +108,9 @@ def add_contact():
 
 def add_phone():
     name = input("Enter the contact's name: ")
-    phone = input("Enter the new phone number: ")
     record = address_book.data.get(name)
     if record:
+        phone = input("Enter the new phone number: ")
         if phone:
             new_phone = Phone(phone)
             record.add_phone(new_phone)
@@ -97,15 +123,13 @@ def add_phone():
 
 def add_email():
     name = input("Enter the contact's name: ")
-    email = input("Enter the new email: ")
     record = address_book.data.get(name)
     if record:
+        email = input("Enter the new email: ")
         if email:
             new_email = Email(email)
             record.add_email(new_email)
             print("Email added successfully.")
-        else:
-            print("Invalid input. Please provide a new email.")
     else:
         print("No contact found with that name.")
 
