@@ -208,7 +208,7 @@ def delete():
         else:
             print("No matching phone number found.")
 
-    if deleted.startswith("phone"):
+    if deleted.startswith("mail"):
         name = input("Enter the contact's name: ")
         email = input("Enter the email to delete: ")
         record = address_book.data.get(name)
