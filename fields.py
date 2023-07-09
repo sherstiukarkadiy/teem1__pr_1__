@@ -14,6 +14,15 @@ class Field:
     def value(self, new_value):
         self.__value = new_value
 
+    def __str__(self) -> str:
+        return f"{self.value}"
+
+    def __eq__(self, __value: object) -> bool:
+        if self.value == __value.value:
+            return True
+        else:
+            return False
+
 
 class Name(Field):
     def __init__(self, name: str) -> None:
