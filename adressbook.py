@@ -40,9 +40,9 @@ class Record:
 
     def __repr__(self):
         name = self.name
-        birth = str(self.birthday)
-        phones = f"{', '.join(map(str, self.phones))}"
-        emails = f"{', '.join(map(str, self.email))}"
+        birth = str(self.birthday) or None
+        phones = f"{', '.join(map(str, self.phones))}" or None
+        emails = f"{', '.join(map(str, self.email))}" or None
         return f"Name: {name}\nPhones: {phones}\nEmails: {emails}\nBirthday: {birth}"
 
 
@@ -55,54 +55,6 @@ class AddressBook(UserDict):
         self.data[record.name.value] = record
         print("Contact added successfully.")
 
-    # def search(self):
-    #     # while True:
-    #     # search values by keywords
-    #     keyword = input('Input keyword: ')
-    #     results = []
-    #     for record in self.data.values():
-    #         # convert to lower case to compare the entered keyword among values
-    #         # add value to list if True
-    #         if keyword.lower() in record.name.value.lower() or any(
-    #                 keyword.lower() in phone.value.lower()[:len(keyword)] for phone in record.phones):
-    #             results.append(record)
-
-    def search(self):
-        keyword = input('Input keyword: ')
-        results = []
-        for record in self.data.values():
-            # Convert all fields to lowercase strings for case-insensitive comparison
-            fields = [str(record.name.value).lower()]
-            fields.extend([str(phone.value).lower() for phone in record.phones])
-            fields.extend([str(email.value).lower() for email in record.email])
-            fields.append(str(record.birthday).lower() if record.birthday else "")
-
-            # Check if the keyword is present in any of the fields
-            if any(keyword.lower() in field for field in fields):
-                results.append(record)
-
-        if results:
-            print("Search results:")
-            for result in results:
-                print(result)  # Виведення повного рядка з усією інформацією про запис контакту
-            return results
-        # if results:
-        #     print("Search results:")
-        #     for result in results:
-        #         print(f"Name: {result.name.value}")
-        #         for phone in result.phones:
-        #             if phone is True:
-        #                 print(f"Phone: {phone.value}")
-        #             # print(f"Phone: {phone.value}")
-        #         for email in result.email:
-        #             if email is True:
-        #                 print(f"Email: {email.value}")
-        #         if result.birthday:
-        #             print(f"Birthday: {result.birthday.value.strftime('%d-%m-%Y')}")
-        #     return results
-        # else:
-        #     print("No results found.")
-
 
 address_book = AddressBook()
 
@@ -112,10 +64,13 @@ def hello():
 
 
 def new_contact():
+    # while True:
+    #     try:
     name = input("Enter the contact's name: ")
     phone = input("Enter the contact's phone number: ")
-    email = input("Enter the contact's email: ")
+    email = input("Enter the contact's email (mail@mail.com): ")
     birthday = input("Enter the contact's birthday (DD-MM-YYYY): ")
+
     return Record(Name(name), Phone(phone) if phone else None, Email(email) if email else None,
                   Birthday(birthday) if birthday else None)
 
@@ -197,7 +152,7 @@ def day_birthday():
 
 def delete():
     deleted = input("Phone, Email or User? ").lower()
-    if deleted.startswith("phone"):
+    if deleted.strip().startswith("phone"):
         name = input("Enter the contact's name: ")
         phone = input("Enter the phone number to delete: ")
         record = address_book.data.get(name)
@@ -208,7 +163,7 @@ def delete():
         else:
             print("No matching phone number found.")
 
-    if deleted.startswith("mail"):
+    if deleted.strip().startswith("mail"):
         name = input("Enter the contact's name: ")
         email = input("Enter the email to delete: ")
         record = address_book.data.get(name)
@@ -219,7 +174,7 @@ def delete():
         else:
             print("No matching email found.")
 
-    elif deleted.startswith("user"):
+    elif deleted.strip().startswith("user"):
         name = input("Enter the contact's name: ")
         record = address_book.data.get(name)
         if record:
@@ -229,6 +184,21 @@ def delete():
             print("No contact found with that name.")
 
 
+def search_contacts():
+    keyword = input('Input keyword: ')
+    results = []
+    for record in address_book.data.values():
+        if keyword.lower() in record.name.value.lower():
+            results.append(record)
+
+    if results:
+        print("Search results:")
+        for result in results:
+            print(result)
+    else:
+        print("No results found.")
+
+
 commands = {
     "hello": hello,
     "add phone": add_phone,
@@ -236,7 +206,7 @@ commands = {
     "add": add_contact,
     "change phone": change_phone,
     "change mail": change_email,
-    "search": address_book.search,
+    "search": search_contacts,
     "birthday": day_birthday,
     "delete": delete
 }
@@ -248,7 +218,8 @@ def main():
         if command in commands:
             func = commands[command]
             func()
-        elif command.startswith("good bye") or command.startswith("close") or command.startswith("exit"):
+        elif command.strip().startswith("good bye") or command.strip().startswith(
+                "close") or command.strip().startswith("exit"):
             print("Good bye!")
             break
         else:
