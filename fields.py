@@ -133,7 +133,7 @@ def email_check(email: str) -> bool:
     reg = r"[a-z]\w+@([a-z]{2,}\.)+[a-z]{2,}\b"
     email = re.search(reg, email)
 
-    if not email:
+    if email:
         return False
     else:
         return True
