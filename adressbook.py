@@ -132,20 +132,17 @@ def add_email():
 
 def change_phone():
     name = input("Enter the contact's name: ")
+    old_phone = input("Enter the old phone: ")
     record = address_book.data.get(name)
     if record:
-        old_phone_number = input("Enter the old phone: ")
-        old_phone = Phone(old_phone_number)
-        if old_phone in record.phones:
-            try:
-                phone = input("Enter the new phone number: ")
+        try:
+            phone = input("Enter the new email: ")
+            if phone:
                 new_phone = Phone(phone)
-                record.edit_phone(old_phone, new_phone)
-                print("Phone number updated successfully.")
-            except ValueError as e:
-                print(str(e))
-        else:
-            print("Phone number not correct for this user")
+                record.edit_email(old_phone, new_phone)
+                print("Email updated successfully.")
+        except ValueError as e:
+            print(str(e))
     else:
         print("No contact found with that name.")
 
@@ -153,15 +150,16 @@ def change_phone():
 def change_email():
     name = input("Enter the contact's name: ")
     old_email = input("Enter the old email: ")
-    email = input("Enter the new email: ")
     record = address_book.data.get(name)
     if record:
-        if email:
-            new_email = Email(email)
-            record.edit_email(old_email, new_email)
-            print("Email updated successfully.")
-        else:
-            print("Invalid input. Please provide a email.")
+        try:
+            email = input("Enter the new email: ")
+            if email:
+                new_email = Email(email)
+                record.edit_email(old_email, new_email)
+                print("Email updated successfully.")
+        except ValueError as e:
+            print(str(e))
     else:
         print("No contact found with that name.")
 
