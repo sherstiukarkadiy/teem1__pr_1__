@@ -43,7 +43,7 @@ class Record:
         birth = str(self.birthday)
         phones = f"{', '.join(map(str, self.phones))}"
         emails = f"{', '.join(map(str, self.email))}"
-        return f"Name: {name}\nBirthday: {birth}\nPhones: {phones}\nEmails: {emails}"
+        return f"Name: {name}\nPhones: {phones}\nEmails: {emails}\nBirthday: {birth}"
 
 
 class AddressBook(UserDict):
@@ -55,33 +55,53 @@ class AddressBook(UserDict):
         self.data[record.name.value] = record
         print("Contact added successfully.")
 
+    # def search(self):
+    #     # while True:
+    #     # search values by keywords
+    #     keyword = input('Input keyword: ')
+    #     results = []
+    #     for record in self.data.values():
+    #         # convert to lower case to compare the entered keyword among values
+    #         # add value to list if True
+    #         if keyword.lower() in record.name.value.lower() or any(
+    #                 keyword.lower() in phone.value.lower()[:len(keyword)] for phone in record.phones):
+    #             results.append(record)
+
     def search(self):
-        # while True:
-        # search values by keywords
         keyword = input('Input keyword: ')
         results = []
         for record in self.data.values():
-            # convert to lower case to compare the entered keyword among values
-            # add value to list if True
-            if keyword.lower() in record.name.value.lower() or any(
-                    keyword.lower() in phone.value.lower()[:len(keyword)] for phone in record.phones):
+            # Convert all fields to lowercase strings for case-insensitive comparison
+            fields = [str(record.name.value).lower()]
+            fields.extend([str(phone.value).lower() for phone in record.phones])
+            fields.extend([str(email.value).lower() for email in record.email])
+            fields.append(str(record.birthday).lower() if record.birthday else "")
+
+            # Check if the keyword is present in any of the fields
+            if any(keyword.lower() in field for field in fields):
                 results.append(record)
 
         if results:
             print("Search results:")
             for result in results:
-                print(f"Name: {result.name.value}")
-                for phone in result.phones:
-                    if phone is True:
-                        print(f"Phone: {phone.value}")
-                for email in result.email:
-                    if email is True:
-                        print(f"Email: {email.value}")
-                if result.birthday:
-                    print(f"Birthday: {result.birthday.value.strftime('%d-%m-%Y')}")
+                print(result)  # Виведення повного рядка з усією інформацією про запис контакту
             return results
-        else:
-            print("No results found.")
+        # if results:
+        #     print("Search results:")
+        #     for result in results:
+        #         print(f"Name: {result.name.value}")
+        #         for phone in result.phones:
+        #             if phone is True:
+        #                 print(f"Phone: {phone.value}")
+        #             # print(f"Phone: {phone.value}")
+        #         for email in result.email:
+        #             if email is True:
+        #                 print(f"Email: {email.value}")
+        #         if result.birthday:
+        #             print(f"Birthday: {result.birthday.value.strftime('%d-%m-%Y')}")
+        #     return results
+        # else:
+        #     print("No results found.")
 
 
 address_book = AddressBook()
