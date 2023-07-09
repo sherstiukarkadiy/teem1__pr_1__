@@ -1,17 +1,18 @@
 from collections import UserDict
-from datetime import datetime, date
+from datetime import datetime
 
 class Notebook(UserDict):
+    note_id = 1000
     def __init__(self):
         self.data = {}
     
     def add(self, note):
-        note_id = ID()
+        self.note_id += 1
         record = {'Title' : note.title,
                   'Text' : note.body, 
                   'Tags' : note.tags,
                   'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M')}
-        self.data[note_id] = record
+        self.data[self.note_id] = record
 
     def __str__(self):
         result = []
@@ -52,7 +53,7 @@ class Notebook(UserDict):
             print(f"Note with title '{title}' does not exist in the notebook.")
 
     def edit(self, title, field, new_value):
-        for note_id, record in self.data.items():
+        for record in self.data.values():
             if title in record['Title']:
                 if field.lower() == 'title':
                     record['Title'] = new_value
@@ -70,27 +71,6 @@ class Note:
         self.title = title
         self.body = body
         self.tags = [tag.strip() for tag in tags.split(',')]
-
-class ID:
-    note_id = 10000 
-    def __init__(self):
-        self.value = ID.note_id
-        ID.note_id += 1
-
-    def __str__(self):
-        return str(self.value)
-
-    def __lt__(self, other):
-        return self.value < other.value
-
-    def __le__(self, other):
-        return self.value <= other.value
-
-    def __gt__(self, other):
-        return self.value > other.value
-
-    def __ge__(self, other):
-        return self.value >= other.value
 
 class Title(Note):
     def __init__(self, value):
