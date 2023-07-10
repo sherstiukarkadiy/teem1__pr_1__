@@ -66,6 +66,19 @@ class Notebook(UserDict):
         else:
             print(f"Note with Title {title} does not exist in the notebook.")
 
+
+    def sort_by_tag(self, tag):
+        result = []
+        for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
+            if tag.lower() in [t.lower() for t in record.get('Tags', [])]:
+                result.append(
+                    "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+        for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
+            if tag.lower() not in [t.lower() for t in record.get('Tags', [])]:
+                result.append(
+                    "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+        return 'Here is what we found for your request:\n' + '\n'.join(result)
+
 class Note:
     def __init__(self, title, body, tags):
         self.title = title
@@ -113,19 +126,23 @@ class Handler:
             print("The note has been changed.")
         elif action == '5':  # Вывод всего списка заметок
             print(self.notebook)
-        elif action == '6':
+        elif action == '6':  # Sort notes by tag
+            tag = input("Please enter a tag to sort by: ")
+            result = self.notebook.sort_by_tag(tag)
+            print(result)
+        elif action == '7':
             pass
 
 
 if __name__ == "__main__":
-    print('Hello. I am your notebook \nChoose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
+    print('Hello. I am your notebook \nChoose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Sorting by tag \n7 | Exit')
     handler = Handler()
     commands = ['Add','View', 'Search', 'Edit', 'Delete', 'Exit']
     while True:
         action = input('Choose a number: ').strip()
         handler.handle(action)
-        if action == '6':
+        if action == '7':
             print('Good bye!')
             break
-        print('Choose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
+        print('Choose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Sort by tag \n7 | Exit')
 
