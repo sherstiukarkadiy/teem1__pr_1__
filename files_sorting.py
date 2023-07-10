@@ -2,12 +2,7 @@ import os
 import re
 import shutil
 from typing import List
-
-# # Задайте путь к папке, которую нужно отсортировать
-# folder_path = (
-#     "C:\\Users\\dmcle\\OneDrive\\Рабочий стол\\projects\\Новая папка\\muller 5800"
-# )
-
+import sys
 
 def delete_empty_folders(dir_path: str, counter=0, hidd_except=True) -> int:
     """Recursively delete empty folders in such directory
@@ -128,9 +123,6 @@ def sort_files(path: str):
 
                 # Распаковка архивов
                 folder_name = os.path.join(path, category, filename.split(".")[0])
-                # можно сразу добавить перемещение распаеованых архивов
-                # folder_name = normalize(folder_name)
-                # или shutil.unpack_archive(os.path.join(dirpath, filename), os.path.join(path, category, folder_name)
                 shutil.unpack_archive(os.path.join(dirpath, filename), folder_name)
             else:
                 category = "unknown"
@@ -150,7 +142,6 @@ def sort_files(path: str):
                 nw_folder_path = os.path.join(path, category)
                 if os.path.exists(os.path.join(nw_folder_path, new_filename)):
                     continue
-                # эта функция при перемещении также может переименовывать, поэтому можно объеденить shutil.move(os.path.join(dirpath,filename), os.path.join(path, category, new_filename))
                 shutil.move(
                     os.path.join(dirpath, new_filename), os.path.join(path, category)
                 )
@@ -175,11 +166,20 @@ def sort_files(path: str):
         print(f"  {ext}")
 
 
-if __name__ == "__main__":
-    import sys
+def main_sorting(DIR_PATH = None):
+    
+    if not DIR_PATH:
+        try:
+            DIR_PATH = " ".join(sys.argv[1:])
+        except IndexError:
+            print("No path entered")
+    
+    if not os.path.isdir(DIR_PATH):
+        print("Invalid path entered")
+    
+    sort_files(DIR_PATH)
+    delete_empty_folders(DIR_PATH)
 
-    if len(sys.argv) > 1:
-        path = sys.argv[1]
-        sort_files(path)
-        delete_empty_folders(path)
-    # sort_files(folder_path)
+if __name__ == "__main__":
+    
+    main_sorting()
