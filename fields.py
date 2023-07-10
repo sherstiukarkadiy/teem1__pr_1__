@@ -121,7 +121,7 @@ def email_check(email: str) -> bool:
 
 
 def birthday_check(date: str):
-    splitters = [".", ",", "/", "-", ";", ":"]
+    splitters = [".", ",", "/", "-", ";", ":", "_"]
     for sign in splitters:
         date = date.replace(sign, " ")
 
