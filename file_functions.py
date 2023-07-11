@@ -56,8 +56,8 @@ def load_contacts_from_csv(file_path):
         for row in reader:
             name = Name(row[0])
             birthday = Birthday(row[1]) if row[1] else None
-            phone_numbers = [row[i] for i in phone_indices if i < len(row) and row[i] != ""]
-            email_addresses = [row[i] for i in email_indices if i < len(row) and row[i] != ""]
+            phone_numbers = [row[i] for i in phone_indices if i < len(row) and row[i] != "N/A"]
+            email_addresses = [row[i] for i in email_indices if i < len(row) and row[i] != "N/A"]
             addressbook.add_record(Record(name, phone=phone_numbers, email=email_addresses, birthday=birthday))
     return addressbook
 

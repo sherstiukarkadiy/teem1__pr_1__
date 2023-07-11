@@ -50,10 +50,9 @@ class Phone(Field):
     @correct_phone.setter
     def correct_phone(self, phone: str | object) -> None:
         phone = str(phone)
-        check = phone_check(phone)
-        if check:
+        if phone_check(phone):
             raise ValueError(f'Phone {phone} is not right, must be only numbers')
-        super().__init__(check)
+        super().__init__(phone)
 
 
 class Email(Field):

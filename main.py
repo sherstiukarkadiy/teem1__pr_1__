@@ -21,10 +21,13 @@ logic_commands = {
 contacts_commands = {
     "add phone": add_phone,
     "add mail": add_email,
+    "add birthday": add_birthday,
     "add contact": add_contact,
     "change phone": change_phone,
-    "change mail": change_email,
+    "change email": change_email,
+    "change birthday": add_birthday,
     "search contact": search_contacts,
+    "show contacts": show_all_contacts,
     "birthday": day_birthday,
     "delete": delete,
 }
