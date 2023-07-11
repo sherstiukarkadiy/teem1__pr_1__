@@ -17,8 +17,8 @@ class Field:
     def __str__(self) -> str:
         return f"{self.value}"
 
-    def __eq__(self, __value: object) -> bool:
-        if self.value == __value:
+    def __eq__(self, other_obj: object) -> bool:
+        if self.value == other_obj.value:
             return True
         else:
             return False
@@ -34,7 +34,7 @@ class Name(Field):
 
     @correct_name.setter
     def correct_name(self, value):
-        if re.search(r"\W", value):
+        if not value or re.search(r"\W", value):
             raise ValueError(f"Invalid name format: {value}. Try again.")
         super().__init__(value)
 

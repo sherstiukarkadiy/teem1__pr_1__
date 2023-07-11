@@ -1,13 +1,14 @@
 from collections import UserDict
 from fields import *
 from datetime import datetime
+import sys
 
 
 class Record:
     def __init__(self, name: Name = str, phone: Phone = None, email: Email = None, birthday: Birthday = None):
         self.name = name
-        self.phones = [] if phone is None else [phone]
-        self.email = [] if email is None else [email]
+        self.phones = [] if not phone else [phone]
+        self.email = [] if not email else [email]
         self.birthday = birthday
 
     def add_phone(self, phone):
@@ -48,7 +49,7 @@ class Record:
 
 class AddressBook(UserDict):
 
-    def add_record(self, record):
+    def add_record(self, record: Record):
         if record.name.value in self.data:
             print("Contact with the same name already exists.")
             return
@@ -56,10 +57,7 @@ class AddressBook(UserDict):
         print("Contact added successfully.")
 
 
-address_book = AddressBook()
-
-
-def hello():
+def hello(**args):
     return print("Hello! Enter command pls: ")
 
 
@@ -71,34 +69,44 @@ def new_contact():
         except ValueError as e:
             print(str(e))
             continue
+        break
+    
+    while True:
         try:
             phone = input("Enter the contact's phone number: ")
             phone = Phone(phone) if phone else None
         except ValueError as e:
             print(str(e))
             continue
+        break
+        
+    while True:
         try:
             email = input("Enter the contact's email (mail@mail.com): ")
             email = Email(email) if email else None
         except ValueError as e:
             print(str(e))
             continue
+        break
+    
+    while True:
         try:
             birthday = input("Enter the contact's birthday (DD-MM-YYYY): ")
             birthday = Birthday(birthday) if birthday else None
         except ValueError as e:
             print(str(e))
             continue
+        break
 
-        return Record(name, phone, email, birthday)
+    return Record(name, phone, email, birthday)
 
 
-def add_contact():
+def add_contact(address_book):
     record = new_contact()
     address_book.add_record(record)
 
 
-def add_phone():
+def add_phone(address_book):
     name = input("Enter the contact's name: ")
     record = address_book.data.get(name)
     if record:
@@ -114,7 +122,7 @@ def add_phone():
         print("No contact found with that name.")
 
 
-def add_email():
+def add_email(address_book):
     name = input("Enter the contact's name: ")
     record = address_book.data.get(name)
     if record:
@@ -130,7 +138,7 @@ def add_email():
         print("No contact found with that name.")
 
 
-def change_phone():
+def change_phone(address_book):
     name = input("Enter the contact's name: ")
     old_phone = input("Enter the old phone: ")
     record = address_book.data.get(name)
@@ -147,7 +155,7 @@ def change_phone():
         print("No contact found with that name.")
 
 
-def change_email():
+def change_email(address_book):
     name = input("Enter the contact's name: ")
     old_email = input("Enter the old email: ")
     record = address_book.data.get(name)
@@ -164,7 +172,7 @@ def change_email():
         print("No contact found with that name.")
 
 
-def day_birthday():
+def day_birthday(address_book):
     name = input("Enter the contact's name: ")
     record = address_book.data.get(name)
     if record:
@@ -172,7 +180,7 @@ def day_birthday():
         print(day)
 
 
-def delete():
+def delete(address_book):
     deleted = input("Phone, Email or User? ").lower()
     if deleted.strip().startswith("phone"):
         name = input("Enter the contact's name: ")
@@ -206,7 +214,7 @@ def delete():
             print("No contact found with that name.")
 
 
-def search_contacts():
+def search_contacts(address_book):
     keyword = input('Input keyword: ')
     results = []
     for record in address_book.data.values():
@@ -219,34 +227,27 @@ def search_contacts():
             print(result)
     else:
         print("No results found.")
+        
+def close(*args) -> None:
+        """breake all program
+        """
+        
+        print("Good bye")
+        sys.exit()
+
+# def main():
+#     while True:
+#         command = input("Enter a command: ").lower()
+#         if command in commands:
+#             func = commands[command]
+#             func()
+#         elif command.strip().startswith("good bye") or command.strip().startswith(
+#                 "close") or command.strip().startswith("exit"):
+#             print("Good bye!")
+#             break
+#         else:
+#             print("Invalid command")
 
 
-commands = {
-    "hello": hello,
-    "add phone": add_phone,
-    "add mail": add_email,
-    "add": add_contact,
-    "change phone": change_phone,
-    "change mail": change_email,
-    "search": search_contacts,
-    "birthday": day_birthday,
-    "delete": delete
-}
-
-
-def main():
-    while True:
-        command = input("Enter a command: ").lower()
-        if command in commands:
-            func = commands[command]
-            func()
-        elif command.strip().startswith("good bye") or command.strip().startswith(
-                "close") or command.strip().startswith("exit"):
-            print("Good bye!")
-            break
-        else:
-            print("Invalid command")
-
-
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from typing import List
-import sys
+
 
 def delete_empty_folders(dir_path: str, counter=0, hidd_except=True) -> int:
     """Recursively delete empty folders in such directory
@@ -132,7 +132,7 @@ def sort_files(path: str):
             files_by_category[category].append(filename)
 
             # Нормализуем имя файла и переименовываем его
-            new_filename = normalize(filename)
+            new_filename = normalize(filename.split(".")[0]) + "." + filename.split(".")[-1]
             os.rename(
                 os.path.join(dirpath, filename), os.path.join(dirpath, new_filename)
             )
@@ -166,20 +166,11 @@ def sort_files(path: str):
         print(f"  {ext}")
 
 
-def main_sorting(DIR_PATH = None):
+def main_sorting():
     
-    if not DIR_PATH:
-        try:
-            DIR_PATH = " ".join(sys.argv[1:])
-        except IndexError:
-            print("No path entered")
-    
-    if not os.path.isdir(DIR_PATH):
+    dir_path = input("Enter the folder path: ")
+    if not os.path.isdir(dir_path):
         print("Invalid path entered")
     
-    sort_files(DIR_PATH)
-    delete_empty_folders(DIR_PATH)
-
-if __name__ == "__main__":
-    
-    main_sorting()
+    sort_files(dir_path)
+    delete_empty_folders(dir_path)

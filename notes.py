@@ -3,8 +3,8 @@ from datetime import datetime
 
 class Notebook(UserDict):
     note_id = 1000
-    def __init__(self):
-        self.data = {}
+    def __init__(self,dictionary = None):
+        self.data = {} if not dictionary else dictionary
     
     def add(self, note):
         self.note_id += 1
@@ -84,48 +84,55 @@ class Tags(Note):
     def __init__(self, value):
         self.value = value
 
-class Handler:
-    def __init__(self):
-        self.notebook = Notebook()
+def add_note(notebook: Notebook): 
+    """Добавление новой заметки"""
+    
+    title = Title(input('Please write a title: ')).value.strip()
+    body = Body(input('Write your note: ')).value
+    tags = Tags(input('Add tags to your note: ')).value
+    note = Note(title, body, tags)
+    return notebook.add(note)
 
-    def handle(self, action):
-        if action == '1': # Добавление новой заметки
-            title = Title(input('Please write a title: ')).value.strip()
-            body = Body(input('Write your note: ')).value
-            tags = Tags(input('Add tags to your note: ')).value
-            note = Note(title, body, tags)
-            return self.notebook.add(note)
-        elif action == '2':  # Поиск по заметкам
-            print("There are following categories: \n1 | Title \n2 | Text \n3 | Tags")
-            category = input('Search number of category: ')
-            pattern = input('Search pattern: ')
-            result = (self.notebook.search(pattern, category))
-            print(result)
-        elif action == '3':  # Удаление заметки по её названию
-            pattern = input('Please enter a Title of note you want to delete: ')
-            self.notebook.delete(pattern)
-        elif action == '4':  # Редактироваие заметок
-            title = input("Please enter a Title of note you want to edit: ")
-            print("You can edit following fields: \n1 | Title \n2 | Text \n3 | Tags")
-            field = input('Enter a field number: ')
-            new_value = input('Enter new value: ')
-            self.notebook.edit(title, field, new_value)
-            print("The note has been changed.")
-        elif action == '5':  # Вывод всего списка заметок
-            print(self.notebook)
-        elif action == '6':
-            pass
+def search_note(notebook: Notebook):  
+    """Поиск по заметкам"""
+    
+    print("There are following categories: \n1 | Title \n2 | Text \n3 | Tags")
+    category = input('Search number of category: ')
+    pattern = input('Search pattern: ')
+    result = (notebook.search(pattern, category))
+    print(result)
+    
+def delete_note(notebook: Notebook):
+    """Удаление заметки по её названию"""
+    
+    pattern = input('Please enter a Title of note you want to delete: ')
+    notebook.delete(pattern)
+    
+def edit_note(notebook: Notebook):
+    """Редактироваие заметок"""
+    
+    title = input("Please enter a Title of note you want to edit: ")
+    print("You can edit following fields: \n1 | Title \n2 | Text \n3 | Tags")
+    field = input('Enter a field number: ')
+    new_value = input('Enter new value: ')
+    notebook.edit(title, field, new_value)
+    print("The note has been changed.")
+    
+def show_all_notes(notebook: Notebook):
+    """Вывод всего списка заметок"""
+    
+    print(notebook)
 
 
-if __name__ == "__main__":
-    print('Hello. I am your notebook \nChoose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
-    handler = Handler()
-    commands = ['Add','View', 'Search', 'Edit', 'Delete', 'Exit']
-    while True:
-        action = input('Choose a number: ').strip()
-        handler.handle(action)
-        if action == '6':
-            print('Good bye!')
-            break
-        print('Choose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
+# if __name__ == "__main__":
+#     print('Hello. I am your notebook \nChoose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
+#     handler = Handler()
+#     commands = ['Add','View', 'Search', 'Edit', 'Delete', 'Exit']
+#     while True:
+#         action = input('Choose a number: ').strip()
+#         handler.handle(action)
+#         if action == '6':
+#             print('Good bye!')
+#             break
+#         print('Choose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
 
