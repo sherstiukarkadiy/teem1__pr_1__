@@ -42,6 +42,33 @@ class Notebook(UserDict):
         if not result:
             print('There is no such note in notebook')
         return 'Here is what we found for your request:\n' + '\n'.join(result)
+    
+    def sort_notes(self, field):
+        result = []
+        
+        if field == '1':
+            result = 'Here is what we found for your request:\n' + str(self)
+            return result
+        elif field == '2':
+            for note_id, record in sorted(self.data.items(), key=lambda x: x[1]["Title"]):
+                result.append(
+                    "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
+            return 'Here is what we found for your request:\n' + '\n'.join(result)
+        elif field == '3':
+            tag = input("Please enter a tag to sort by: ")
+            for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
+                if tag.lower() in [t.lower() for t in record.get('Tags', [])]:
+                    result.append(
+                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+            for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
+                if tag.lower() not in [t.lower() for t in record.get('Tags', [])]:
+                    result.append(
+                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+            return 'Here is what we found for your request:\n' + '\n'.join(result)
+        else:
+            print(f"Invalid field '{field}'.")
+            
+    
 
     def delete(self, title):
         for note_id, record in self.data.items():
@@ -117,6 +144,12 @@ def edit_note(notebook: Notebook):
     new_value = input('Enter new value: ')
     notebook.edit(title, field, new_value)
     print("The note has been changed.")
+    
+def sort_notes(notebook: Notebook):
+    print("You can sort by following fields: \n1 | ID \n2 | Title \n3 | Tags")
+    field = input('Enter a field number: ')
+    result = notebook.sort_notes(field)
+    print(result)
     
 def show_all_notes(notebook: Notebook):
     """Вывод всего списка заметок"""

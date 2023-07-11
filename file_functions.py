@@ -17,6 +17,9 @@ def load_data_from_files(adressbook_path, notes_path):
 def save_addressbook_to_csv(file_path, addressbook: AddressBook):
     # Знаходимо максимальну кількість номерів телефону та адрес електронної пошти серед усіх контактів
     
+    if not dict(addressbook):
+        return
+    
     max_phone_count = max([len(record.phones) for record in addressbook.values()])
     max_email_count = max([len(record.email) for record in addressbook.values()])
 
@@ -59,10 +62,11 @@ def load_contacts_from_csv(file_path):
     return addressbook
 
 def save_notes_to_json(file_path, notes):
+    if not dict(notes):
+        return
     with open(file_path, "w") as json_file:
         json.dump(dict(notes), json_file, indent=4)
     print("Notes saved to JSON:", file_path)
-    pass
     
 def load_notes_from_json(file_path):
     with open(file_path, "r") as json_file:

@@ -8,10 +8,6 @@ from prompt_toolkit.completion import WordCompleter
 
 CONTACTS_PATH = Path(__file__).parent.joinpath("Contacts.csv")
 NOTES_PATH = Path(__file__).parent.joinpath("Notes.json")
-with open(CONTACTS_PATH,"w") as f:
-    pass
-with open(NOTES_PATH,"w") as f:
-    pass
 contacts,notebook = load_data_from_files(CONTACTS_PATH, NOTES_PATH)
 
 logic_commands = {
@@ -38,7 +34,8 @@ note_comands = {
     "search note": search_note,
     "delete note": delete_note,
     "edit note": edit_note,
-    "show notes": show_all_notes
+    "show notes": show_all_notes,
+    "sort notes": sort_notes
 }
 
 word_completer = WordCompleter([i for i in logic_commands]+[j for j in contacts_commands]+[n for n in note_comands])
