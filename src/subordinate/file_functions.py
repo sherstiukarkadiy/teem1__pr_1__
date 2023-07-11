@@ -1,8 +1,8 @@
 import csv
 import json
-from adressbook import *
-from fields import *
-from notes import *
+from .adressbook import *
+from .fields import *
+from .notes import *
 
 def save_data_to_files(addressbook, notes, adressbook_path, notes_path):
     save_addressbook_to_csv(adressbook_path, addressbook)

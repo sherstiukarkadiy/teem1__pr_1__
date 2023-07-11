@@ -7,7 +7,9 @@ class Notebook(UserDict):
         self.data = {} if not dictionary else dictionary
     
     def add(self, note):
-        self.note_id += 1
+        last_id = max(self.data.keys()) if self.data else 1000
+        self.note_id = int(last_id) + 1
+        self.note_id = str(self.note_id)
         record = {'Title' : note.title,
                   'Text' : note.body, 
                   'Tags' : note.tags,

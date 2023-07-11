@@ -1,5 +1,5 @@
 from collections import UserDict
-from fields import *
+from .fields import *
 from datetime import datetime
 import sys
 
@@ -133,7 +133,7 @@ def new_contact():
     
     while True:
         try:
-            birthday = input("Enter the contact's birthday (DD-MM-YYYY) or path: ")
+            birthday = input("Enter the contact's birthday (DD-MM-YYYY) or pass: ")
             birthday = Birthday(birthday) if birthday else None
         except ValueError as e:
             print(str(e))
