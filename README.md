@@ -3,7 +3,7 @@ First teem project on GoIT course
 
 # Subordinate 
 <div align="center">
-  <img src="src/subordinate/Logo2.png" alt="Logo Image" style="max-width: 70%; max-height: 480px;">
+  <img src="src/subordinate/Logo2.png" alt="Logo Image" style="max-width: 60%; max-height: 480px;">
 </div>
 
 
