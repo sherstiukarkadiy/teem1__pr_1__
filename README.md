@@ -1,9 +1,9 @@
-# teem1__pr_1__
+# CEO
 First teem project on GoIT course
 
 # Назва програми
 <div align="center">
-  <img src="src/subordinate/Logo.png" alt="Logo Image" style="width: 300px; height: 300px;">
+  <img src="src/subordinate/Logo2.png" alt="Logo Image" style="width: 300px; height: 300px;">
 </div>
 
 Наша програма - Subordinate - це корисний бот для управління контактами та нотатками. Вона надає простий та зручний інтерфейс командного рядка для додавання, пошуку, редагування та видалення контактів, а також створення та управління нотатками та можливістю сортування та додовання файлів! 
@@ -13,7 +13,7 @@ First teem project on GoIT course
 Склонуйте репозиторій з програмою Subordinate:
 
 ```sh
-shgit clone https://github.com/sherstiukarkadiy/teem1__pr_1__.git
+git clone https://github.com/sherstiukarkadiy/teem1__pr_1__.git
 ```
 
 ## Встановіть залежності, виконавши наступну команду:
