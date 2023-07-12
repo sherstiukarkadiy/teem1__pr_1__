@@ -1,7 +1,7 @@
 # CEO
 First teem project on GoIT course
 
-# Назва програми
+# Subordinate 
 <div align="center">
   <img src="src/subordinate/Logo2.png" alt="Logo Image" style="width: 1000px; height: 480px;">
 </div>
