@@ -17,12 +17,6 @@ First teem project on GoIT course
 shgit clone https://github.com/sherstiukarkadiy/teem1__pr_1__.git
 ```
 
-## Перейдіть до каталогу програми:
-
-```sh
-cd subordinate
-```
-
 ## Встановіть залежності, виконавши наступну команду:
 
 ```sh
@@ -34,7 +28,7 @@ pip install -i https://test.pypi.org/simple/ subordinate-project-1
 Запустіть програму Subordinate, виконавши наступну команду:
 
 ```sh
-python subordinate.py
+subordinate
 ```
 
 ## Після запуску ви побачите запрошення для введення команди. Введіть команду та дотримуйтесь інструкцій, щоб управляти контактами та нотатками.
