@@ -3,7 +3,7 @@ First teem project on GoIT course
 
 # Назва програми
 <div align="center">
-  <img src="src/subordinate/Logo.png" alt="Logo Image">
+  <img src="src/subordinate/Logo.png" alt="Logo Image" style="width: 300px; height: 300px;">
 </div>
 
 Наша програма - Subordinate - це корисний бот для управління контактами та нотатками. Вона надає простий та зручний інтерфейс командного рядка для додавання, пошуку, редагування та видалення контактів, а також створення та управління нотатками та можливістю сортування та додовання файлів! 
