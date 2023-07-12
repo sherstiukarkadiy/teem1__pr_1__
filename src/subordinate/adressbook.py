@@ -72,10 +72,12 @@ class AddressBook(UserDict):
 
     def add_record(self, record: Record):
         if record.name.value in self.data:
-            print("Contact with the same name already exists.")
-            return
+            return "Contact with the same name already exists."
         self.data[record.name.value] = record
-        print("Contact added successfully.")
+        return "Contact added sucsesfully."
+    
+    def sort_record(self):
+        self.data = dict(sorted(self.data.items(),key = lambda elem: elem[0]))
 
 
 def choose_from_menu(lst: list):
@@ -104,7 +106,7 @@ def new_contact():
     while True:
         try:
             name = input("Enter the contact's name: ")
-            if not name:
+            if not len(name):
                 print("Can't create contact without name")
                 return
             name = Name(name)
@@ -145,7 +147,10 @@ def new_contact():
 
 def add_contact(address_book: AddressBook):
     record = new_contact()
-    address_book.add_record(record)
+    if not record: return
+    print(address_book.add_record(record))
+    address_book.sort_record()
+    
 
 
 def add_phone(address_book: AddressBook):
@@ -345,7 +350,7 @@ def search_contacts(address_book: AddressBook):
         
 def show_all_contacts(address_book: AddressBook):
     for record in address_book.values():
-        print(str(record) + "\n")
+        print(str(record))
         
 def close(*args) -> None:
         """breake all program

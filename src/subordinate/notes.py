@@ -20,7 +20,7 @@ class Notebook(UserDict):
         result = []
         for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
             result.append(
-                "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
+                "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
         return '\n'.join(result)
 
     def search(self, pattern, category):
@@ -32,15 +32,15 @@ class Notebook(UserDict):
             if category_new == '1': # Поиск по названию заметки
                 if record['Title'].lower().startswith(pattern_new):
                     result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
             elif category_new == '2': # Поиск совпадений в тексте
                 if pattern_new in record["Text"]:
                     result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
             elif category_new == '3': # Поиск по тегам
                 if pattern_new in [tag.lower().replace(' ', '') for tag in record.get('Tags', [])]:
                     result.append(
-                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)   
+                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)   
         if not result:
             print('There is no such note in notebook')
         return 'Here is what we found for your request:\n' + '\n'.join(result)
@@ -54,18 +54,18 @@ class Notebook(UserDict):
         elif field == '2':
             for note_id, record in sorted(self.data.items(), key=lambda x: x[1]["Title"]):
                 result.append(
-                    "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
+                    "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
             return 'Here is what we found for your request:\n' + '\n'.join(result)
         elif field == '3':
             tag = input("Please enter a tag to sort by: ")
             for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
                 if tag.lower() in [t.lower() for t in record.get('Tags', [])]:
                     result.append(
-                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
             for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
                 if tag.lower() not in [t.lower() for t in record.get('Tags', [])]:
                     result.append(
-                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText: {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
+                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
             return 'Here is what we found for your request:\n' + '\n'.join(result)
         else:
             print(f"Invalid field '{field}'.")
@@ -117,7 +117,8 @@ def add_note(notebook: Notebook):
     """Добавление новой заметки"""
     
     title = Title(input('Please write a title: ')).value.strip()
-    body = Body(input('Write your note: ')).value
+    print('Write your note: ', end="")
+    body = Body("\n".join(iter(input, ""))).value
     tags = Tags(input('Add tags to your note: ')).value
     note = Note(title, body, tags)
     return notebook.add(note)

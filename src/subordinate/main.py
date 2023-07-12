@@ -72,5 +72,6 @@ def main_func():
                 print("Invalid command")
     finally:
         save_data_to_files(contacts,notebook,CONTACTS_PATH,NOTES_PATH)
-        
+
+
 main_func()
