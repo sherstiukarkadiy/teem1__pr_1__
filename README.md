@@ -49,8 +49,8 @@ help: Вивести список доступних команд та їх оп
 
 ## Автори
 - Arkadiy Sherstiuk
-- Бутков Олександр
-- Иван Колесник
+- Butkov Oleksandr
+- Ivan Kolesnyk
 - Andrii Mazurets
 - Zhovtenko Oleksii
 
