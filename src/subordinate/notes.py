@@ -1,174 +1,439 @@
-from collections import UserDict
+from abc import ABC,abstractmethod
+from collections import UserDict,UserList
 from datetime import datetime
+from enum import Enum
+import json
+from typing import Any,Dict
 
-class Notebook(UserDict):
-    note_id = 1000
-    def __init__(self,dictionary = None):
-        self.data = {} if not dictionary else dictionary
+class NoteFieldNames(str, Enum):
+    Id = "id"
+    Title = "title"
+    Body = "body"
+    Tags = "tags"
+    Time = "timestamp"
+     
+
+#NOTES CLASSES-----------------------------------  
+class NoteField(ABC):
+    @abstractmethod
+    def __repr__ (self):
+        pass
     
-    def add(self, note):
-        last_id = max(self.data.keys()) if self.data else 1000
-        self.note_id = int(last_id) + 1
-        self.note_id = str(self.note_id)
-        record = {'Title' : note.title,
-                  'Text' : note.body, 
-                  'Tags' : note.tags,
-                  'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M')}
-        self.data[self.note_id] = record
-
-    def __str__(self):
-        result = []
-        for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
-            result.append(
-                "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
-        return '\n'.join(result)
-
-    def search(self, pattern, category):
-        result = []
-        category_new = category.strip().lower()
-        pattern_new = pattern.strip().lower()
-
-        for note_id, record in self.data.items():
-            if category_new == '1': # Поиск по названию заметки
-                if record['Title'].lower().startswith(pattern_new):
-                    result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
-            elif category_new == '2': # Поиск совпадений в тексте
-                if pattern_new in record["Text"]:
-                    result.append(
-                        "_" * 50 + "\n" + f"Title: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
-            elif category_new == '3': # Поиск по тегам
-                if pattern_new in [tag.lower().replace(' ', '') for tag in record.get('Tags', [])]:
-                    result.append(
-                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)   
-        if not result:
-            print('There is no such note in notebook')
-        return 'Here is what we found for your request:\n' + '\n'.join(result)
+    def __eq__(self, __value: object) -> bool:
+        return self.value == __value.value
     
-    def sort_notes(self, field):
-        result = []
+    def __lt__(self, __value: object) -> bool:
+        return self.value < __value.value
+    
+    def __le__(self, __value: object) -> bool:
+        return self.value <= __value.value
+    
+    def __ne__(self, __value: object) -> bool:
+        return self.value != __value.value
+    
+    def __ge__(self, __value: object) -> bool:
+        return self.value >= __value.value
+    
+    def __gt__(self, __value: object) -> bool:
+        return self.value > __value.value
+    
+class NoteId(NoteField):
+    def __init__(self, value: str):
+        self.value = value
+    
+    def __repr__ (self) -> str:
+        return f"ID: {self.value}"
+    
+    def __int__(self) -> int:
+        return self.value
+
+class Title(NoteField):
+    def __init__(self, value: str):
+        self.value = value
+    
+    def __repr__ (self) -> str:
+        return f"Title: {self.value}"
+
+class Body(NoteField):
+    def __init__(self, value: str):
+        self.value = value
         
-        if field == '1':
-            result = 'Here is what we found for your request:\n' + str(self)
-            return result
-        elif field == '2':
-            for note_id, record in sorted(self.data.items(), key=lambda x: x[1]["Title"]):
-                result.append(
-                    "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50 + '\n')
-            return 'Here is what we found for your request:\n' + '\n'.join(result)
-        elif field == '3':
-            tag = input("Please enter a tag to sort by: ")
-            for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
-                if tag.lower() in [t.lower() for t in record.get('Tags', [])]:
-                    result.append(
-                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
-            for note_id, record in sorted(self.data.items(), key=lambda x: x[0]):
-                if tag.lower() not in [t.lower() for t in record.get('Tags', [])]:
-                    result.append(
-                        "_" * 50 + "\n" + f"ID: {note_id} \nTitle: {record['Title']} \nText:\n {record['Text']} \nTags: {record['Tags']} \nCreation time: {record['Timestamp']} \n" + "_" * 50)
-            return 'Here is what we found for your request:\n' + '\n'.join(result)
+    def __repr__ (self) -> str:
+        return f"Body: {self.value}"
+
+class Tags(NoteField):
+    def __init__(self, value: list[str]):
+        self.value = value
+        
+    def __repr__ (self) -> str:
+        return f"Tags: " + ";".join(self.value)
+
+        
+class CreationTime(NoteField):
+    def __init__(self, value: str):
+        self.value = value
+        
+    def __repr__(self) -> str:
+        return "Creation time: " + self.value
+    
+class Note(UserDict):
+    def __init__(self, note_id: NoteField, title: NoteField, body: NoteField, tags: NoteField, timestamp: NoteField) -> None:
+        self.data = {
+                NoteFieldNames.Id: note_id,
+                NoteFieldNames.Title: title,
+                NoteFieldNames.Body: body,
+                NoteFieldNames.Tags: tags,
+                NoteFieldNames.Time: timestamp
+            }
+    
+    def __repr__(self) -> str:
+        note_card = ("_" * 50 + "\n" + 
+        f"""{self.data[NoteFieldNames.Id]}
+        \r{self.data[NoteFieldNames.Title]} 
+        \r{self.data[NoteFieldNames.Body]} 
+        \r{self.data[NoteFieldNames.Tags]} 
+        \r{self.data[NoteFieldNames.Time]}\n""" + 
+        "_" * 50 + '\n')
+        return note_card
+    
+    def __eq__(self, __other: object) -> bool:
+        return dict(self.data) == dict(__other)
+    
+    def to_dict(self):
+        return {ind:value.value for ind,value in self.data.items()}
+
+
+#SEARCHING CLASSES-----------------------------------  
+class Searcher(ABC):
+    def __init__(self, data: list[Note]) -> None:
+        self.data = data
+    
+    @abstractmethod
+    def find_all(self):
+        pass
+
+class IdSearcher(Searcher):
+    def find_all(self, pattern: str) -> list[Note]:
+        for record in self.data:
+            if record[NoteFieldNames.Id].value == pattern:
+                return [record]
         else:
-            print(f"Invalid field '{field}'.")
+            return []
             
+class TitleSearcher(Searcher):
+    def find_all(self, pattern: str) -> list[Note]:
+        matches = []
+        for record in self.data:
+            if pattern.lower() in record[NoteFieldNames.Title].value.lower() :
+                matches.append(record)
+        
+        return matches
+
+class BodySearcher(Searcher):
+    def find_all(self, pattern: str) -> list[Note]:
+        matches = []
+        for record in self.data:
+            if pattern.lower() in record[NoteFieldNames.Body].value.lower() :
+                matches.append(record)
+        
+        return matches
+class TagSearcher(Searcher):
+    def find_all(self, pattern: str) -> list[Note]:
+        matches = []
+        for record in self.data:
+            if pattern in record[NoteFieldNames.Tags].value:
+                matches.append(record)
+        
+        return matches
+
+class TimeSearcher(Searcher):
+    def find_all(self, pattern: str) -> list[Note]|None:
+        matches = []
+        for record in self.data:
+            if pattern.lower() in record[NoteFieldNames.Time].value.lower() :
+                matches.append(record)
+        
+        return matches
+
+
+#SORTING CLASSES-----------------------------------  
+class Sorter(ABC):
+    def __init__(self, data: list[Note]) -> None:
+        self.data = data
+    
+    @abstractmethod
+    def sort(self):
+        pass
+
+class IdSorter(Sorter):
+    def sort(self,reverse:bool = False) -> list[Note]:
+        return sorted(self.data, key=lambda x: x[NoteFieldNames.Id],reverse=reverse)
+            
+class TitleSorter(Sorter):
+    def sort(self,reverse:bool = False) -> list[Note]:
+        return sorted(self.data, key=lambda x: x[NoteFieldNames.Title],reverse=reverse)
+
+class BodySorter(Sorter):
+    def sort(self,reverse:bool = False) -> list[Note]:
+        return sorted(self.data, key=lambda x: x[NoteFieldNames.Body],reverse=reverse)
+
+class TagSorter(Sorter):
+    def sort(self, reverse:bool = False) -> list[Note]:
+        return sorted(self.data, key=lambda x: sorted(x[NoteFieldNames.Tags].value),reverse=reverse)
+    
+class TimeSorter(Sorter):
+    def sort(self,reverse:bool = False) -> list[Note]:
+        return sorted(self.data, key=lambda x: datetime.strptime(x[NoteFieldNames.Time],"%Y-%m-%d %H:%M"),reverse=reverse)
+
+#NOTES OPERATION CLASSES-----------------------------------        
+class NoteOperation(ABC):
+    
+    @abstractmethod
+    def realize(self):
+        pass
+
+class NoteCreator(NoteOperation):
+    note_id = 0
+    
+    def __init__(self, note:Dict[str, Any]) -> None:
+        NoteCreator.note_id += 1
+        
+        self.id = note.get(NoteFieldNames.Id) or self.note_id
+        self.title = note.get(NoteFieldNames.Title)
+        self.body = note.get(NoteFieldNames.Body)
+        self.tags = note.get(NoteFieldNames.Tags)
+        self.timestamp = note.get(NoteFieldNames.Time) or datetime.now().strftime('%Y-%m-%d %H:%M')
+    
+    def realize(self) -> Note:
+        self._tags_creator()
+        self.note = Note(NoteId(self.id),Title(self.title),Body(self.body),Tags(self.tags),CreationTime(self.timestamp))
+        return self.note
+    
+    def _tags_creator(self) -> None:
+        if not isinstance(self.tags, list) and self.tags:
+            self.tags = [tag.strip() for tag in self.tags.split(",")]
+        elif not self.tags:
+            self.tags = []
+        
+class NoteSearcher(NoteOperation):
+    search_fields = {
+        NoteFieldNames.Id: IdSearcher,
+        NoteFieldNames.Title: TitleSearcher,
+        NoteFieldNames.Body: BodySearcher,
+        NoteFieldNames.Tags: TagSearcher,
+        NoteFieldNames.Time: TimeSearcher
+    }
+    
+    def __init__(self, data:list[Note]) -> None:
+        self.data = data
+        
+    def realize(self,field: str,pattern: str) -> list[Note]:
+        if not field.lower() in self.search_fields:
+            return []
+
+        searcher = self.search_fields.get(field.lower())(self.data)
+        return searcher.find_all(pattern)
+    
+class NoteSorter(NoteOperation):
+    sorting_fields = {
+        NoteFieldNames.Id: IdSorter,
+        NoteFieldNames.Title: TitleSorter,
+        NoteFieldNames.Body: BodySorter,
+        NoteFieldNames.Tags: TagSorter,
+        NoteFieldNames.Time: TimeSorter
+    }
+    
+    def __init__(self, data:list[Note]) -> None:
+        self.data = data
+        
+    def realize(self,field:str, reverse:bool = False) -> list[Note]:
+        if not field.lower() in self.sorting_fields:
+            return []
+
+        sorter = self.sorting_fields.get(field.lower())(self.data)
+        return sorter.sort(reverse)
+
+class NoteInRangeFounder(NoteOperation):
+    
+    def __init__(self, data:list[Note]) -> None:
+        self.data = data
+    
+    def realize(self, _from: datetime ,_to: datetime) -> list[Note]:        
+        _from = datetime.min if not _from else _from
+        _to = datetime.max if not _to else _to
+        
+        result = []
+        for note in self.data:
+            if _from <= note[NoteFieldNames.Time] <= _to:
+                result.append(note)
+        
+        return result
+    
+class NoteEditor(NoteOperation):
+    def __init__(self,old_note: Note, new_note:Dict[str, Any]) -> None:
+
+        self.id = old_note.get(NoteFieldNames.Id)
+        self.title = new_note.get(NoteFieldNames.Title) or old_note.get(NoteFieldNames.Title).value
+        self.body = new_note.get(NoteFieldNames.Body) or old_note.get(NoteFieldNames.Body).value
+        self.tags = new_note.get(NoteFieldNames.Tags) or old_note.get(NoteFieldNames.Tags).value
+        self.timestamp = old_note.get(NoteFieldNames.Time).value
+    
+    def realize(self) -> Note:
+        self._tags_creator()
+        self.note = Note(NoteId(self.id),Title(self.title),Body(self.body),Tags(self.tags),CreationTime(self.timestamp))
+        return self.note
+    
+    def _tags_creator(self) -> None:
+        if not isinstance(self.tags, list) and self.tags:
+            self.tags = [tag.strip() for tag in self.tags.split(",")]
+        elif not self.tags:
+            self.tags = []
+        
+
+#MAIN CLASS ---------------------------------------       
+class Notebook(UserList):
+    def __init__(self,userlist: list[Note] = None):
+        self.data = [] if not userlist else userlist
+        
+    def __repr__(self) -> str:
+        return '\n'.join([str(note) for note in self.data])
+    
+    def add(self, title: str, body: str, tags:str = '') -> str:
+        notecreator = NoteCreator(dict(title=title,body=body,tags=tags))
+        note = notecreator.realize()
+        self.data.append(note)
+        return "Succesfuly added"
+        
+    def search(self, field: str, pattern: str) -> str:
+        if field not in list(NoteFieldNames):
+            return f'No field "{field}" in note'
+        note_searcher = NoteSearcher(self.data)
+        result = note_searcher.realize(field=field,pattern=pattern)
+        if not result:
+            return "No matches founded"
+        return 'Here is what we found for your request:\n' + "\n".join([str(note) for note in result])
+    
+    def sort_notes(self, field: str, reverse: bool = False) -> str:
+        if field not in list(NoteFieldNames):
+            return f'No field "{field}" in note'
+        
+        note_sorter = NoteSorter(self.data)
+        result = note_sorter.realize(field=field,reverse=reverse)
+        return 'After sorting:\n' + "\n".join([str(note) for note in result])
+
+    def delete(self, id: int) -> str:
+        note = NoteSearcher(self.data).realize(NoteFieldNames.Id, id)
+        if not note:
+            return "No matches founded"
+        self.data.remove(note[0])
+        return "Succesfuly deleted"
+    
+    def delete_any(self, field: str, pattern:str) -> str:
+        if field not in [NoteFieldNames.Title,NoteFieldNames.Body,NoteFieldNames.Tags]:
+            return f"Can't use this function in field {field}"
+        
+        notes = NoteSearcher(self.data).realize(field, pattern=pattern)
+        if not notes:
+            return "No matches founded"
+        
+        for note in notes:
+            self.data.remove(note)
+        
+        return "Succesfuly deleted"
+            
+    def delete_time_range(self, _from:datetime = None, _to: datetime = None) -> str:
+        if not _from and not _to:
+            return "Not correct range"
+        
+        range_founder = NoteInRangeFounder(self.data)
+        notes_to_delete = range_founder.realize(_from,_to)
+        if not notes_to_delete:
+            return "Not correct range"
+        
+        for note in notes_to_delete:
+            self.data.remove(note)
+            
+        return "Succesfuly deleted"
+
+    def clear(self):
+        self.data = []
+
+    def edit(self, id: int, title: str = '', body: str = '', tags:str = '') -> str:
+        
+        searcher = NoteSearcher(self.data)
+        old_note = searcher.realize(NoteFieldNames.Id, id)[0]     
+        if not old_note:
+            return f"No note with id: {id}" 
+        
+        note_editor = NoteEditor(old_note ,dict(title=title,body=body,tags=tags))
+        new_note = note_editor.realize()
+        self.data[self.data.index(old_note)] = new_note
+        return f"Note with id: {id} succesfully changed"
+    
+    def change_start_id(self):
+        max_id = max([note[NoteFieldNames.Id] for note in self.data])
+        NoteCreator.note_id = max_id
+    
+    def to_list(self):
+        return [note.to_dict() for note in self.data]
+
+#FILE DOWNLOADER -----------------------------
+class NotebookReader():
+    def __init__(self, file: str):
+        self.file = file
+    
+    def create(self) -> Notebook:
+        try:
+            with open(self.file,"r") as fl:
+                notes_json = json.load(fl)
+        except:
+            return Notebook()
+        
+        notes = []
+        for note_dict in notes_json:
+            note = NoteCreator(note_dict).realize()
+            notes.append(note)
+        
+        return Notebook(notes)
+    
+#FILE SAVER --------------------------------
+class NotebookWriter():
+    def __init__(self, file: str):
+        self.file = file
+    
+    def write(self,notebook: Notebook):
+        with open(self.file,"w") as fl:
+            json.dump(notebook.to_list(),fl,indent=4,ensure_ascii=False)
+
+
+def add_note(notebook: Notebook):
+    title = input("Input title: ")
+    body = input("Input body: ")
+    tags = input('Input tags spliting by ",": ')
+    print(notebook.add(title,body,tags))
+    return notebook
     
 
-    def delete(self, title):
-        for note_id, record in self.data.items():
-            if record['Title'].lower() == title.lower():
-                del self.data[note_id]
-                print(f"Note with title '{title}' deleted from notebook.")
-                return
-        else:
-            print(f"Note with title '{title}' does not exist in the notebook.")
-
-    def edit(self, title, field, new_value):
-        for record in self.data.values():
-            if title in record['Title']:
-                if field == '1':
-                    record['Title'] = new_value
-                elif field == '2':
-                    record['Text'] = new_value
-                elif field == '3':
-                    record['Tags'] = [tag.strip() for tag in new_value.split(',')] 
-                else:
-                    print(f"Invalid field '{field}'.")
-        else:
-            print(f"Note with Title {title} does not exist in the notebook.")
-
-class Note:
-    def __init__(self, title, body, tags):
-        self.title = title
-        self.body = body
-        self.tags = [tag.strip() for tag in tags.split(',')]
-
-class Title(Note):
-    def __init__(self, value):
-        self.value = value
-
-class Body(Note):
-    def __init__(self, value):
-        self.value = value
-
-class Tags(Note):
-    def __init__(self, value):
-        self.value = value
-
-def add_note(notebook: Notebook): 
-    """Добавление новой заметки"""
-    
-    title = Title(input('Please write a title: ')).value.strip()
-    print('Write your note: ', end="")
-    body = Body("\n".join(iter(input, ""))).value
-    tags = Tags(input('Add tags to your note: ')).value
-    note = Note(title, body, tags)
-    return notebook.add(note)
-
-def search_note(notebook: Notebook):  
-    """Поиск по заметкам"""
-    
-    print("There are following categories: \n1 | Title \n2 | Text \n3 | Tags")
-    category = input('Search number of category: ')
-    pattern = input('Search pattern: ')
-    result = (notebook.search(pattern, category))
-    print(result)
-    
-def delete_note(notebook: Notebook):
-    """Удаление заметки по её названию"""
-    
-    pattern = input('Please enter a Title of note you want to delete: ')
-    notebook.delete(pattern)
-    
-def edit_note(notebook: Notebook):
-    """Редактироваие заметок"""
-    
-    title = input("Please enter a Title of note you want to edit: ")
-    print("You can edit following fields: \n1 | Title \n2 | Text \n3 | Tags")
-    field = input('Enter a field number: ')
-    new_value = input('Enter new value: ')
-    notebook.edit(title, field, new_value)
-    print("The note has been changed.")
-    
-def sort_notes(notebook: Notebook):
-    print("You can sort by following fields: \n1 | ID \n2 | Title \n3 | Tags")
-    field = input('Enter a field number: ')
-    result = notebook.sort_notes(field)
-    print(result)
-    
-def show_all_notes(notebook: Notebook):
-    """Вывод всего списка заметок"""
+if __name__ == "__main__":
+    print("Create notebook")
+    notebook = NotebookReader("/Users/macair/Desktop/GoIT - course/teem1__pr_1__/src/subordinate/Notes.json").create()
+    notebook.change_start_id()
+    notebook = add_note(notebook)
+    notebook = add_note(notebook)
+    notebook = add_note(notebook)
     
     print(notebook)
-
-
-# if __name__ == "__main__":
-#     print('Hello. I am your notebook \nChoose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
-#     handler = Handler()
-#     commands = ['Add','View', 'Search', 'Edit', 'Delete', 'Exit']
-#     while True:
-#         action = input('Choose a number: ').strip()
-#         handler.handle(action)
-#         if action == '6':
-#             print('Good bye!')
-#             break
-#         print('Choose the required command: \n1 | Add \n2 | Search \n3 | Delete \n4 | Edit \n5 | View \n6 | Exit')
-
+    print()
+    print(notebook.delete(1))
+    print()
+    print(notebook)
+    notebook = add_note(notebook)
+    print(notebook.search("title","b"))
+    # print(notebook.sort_notes("tags"))
+    print(notebook.delete_any("body","yes"))
+    # print(notebook.edit(2, "I","am","groot"))
+    print(notebook)
+    # notebook.clear()
+    # print(notebook) 
+    writer = NotebookWriter("/Users/macair/Desktop/GoIT - course/teem1__pr_1__/src/subordinate/Notes.json")
+    writer.write(notebook)

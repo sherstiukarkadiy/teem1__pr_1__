@@ -5,7 +5,7 @@ with open('README.md') as readme:
 
 setup(
     name='subordinate_project_1',
-    version='0.0.9',
+    version='0.0.10',
     description='wery useful bot',
     long_description = long_description,
     url='http://github.com/dummy_user/useful',

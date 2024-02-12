@@ -22,42 +22,40 @@ class Record:
             else:
                 self.email.append(email)
 
-    def add_phone(self, phone):
+    def add_phone(self, phone: Phone):
         self.phones.append(phone)
 
-    def add_email(self, email):
+    def add_email(self, email: Email):
         self.email.append(email)
 
-    def delete_phone(self, phone):
+    def delete_phone(self, phone: Phone):
         self.phones.remove(phone)
         
     def delete_birthday(self):
         self.birthday = None
 
-    def delete_email(self, email):
+    def delete_email(self, email: Email):
         self.email.remove(email)
     
-    def delete_birthday(self, birthday):
+    def delete_birthday(self, birthday: Birthday):
         self.phones.remove(birthday)
 
-    def edit_phone(self, old_phone, new_phone):
+    def edit_phone(self, old_phone: Phone, new_phone: Phone):
         index_of_old_phone = self.phones.index(old_phone)
         self.phones[index_of_old_phone] = new_phone
 
-    def edit_email(self, old_email, new_email):
+    def edit_email(self, old_email: Email, new_email: Email):
         index_of_old_email = self.phones.index(old_email)
         self.email[index_of_old_email] = new_email
         
-    def edit_birthday(self, birthday):
+    def edit_birthday(self, birthday: Birthday):
         self.birthday = birthday
 
     def days_to_birthday(self):
         if self.birthday:
-            today = datetime.today()
-            next_birthday = datetime(today.year, self.birthday.value.month, self.birthday.value.day)
-            if next_birthday < today:
-                next_birthday = datetime(today.year + 1, self.birthday.value.month, self.birthday.value.day)
-            return (next_birthday - today).days
+            return self.birthday.days_to_birthday()
+        else:
+            return -1
 
     def __repr__(self):
         line = "-" * 25
@@ -69,8 +67,11 @@ class Record:
 
 
 class AddressBook(UserDict):
-
-    def add_record(self, record: Record):
+    
+    def __init__(self, addressbook: dict = None) -> None:
+        self.data = addressbook if addressbook else {}
+    
+    def add_record(self, record: Record) -> str:
         if record.name.value in self.data:
             return "Contact with the same name already exists."
         self.data[record.name.value] = record
@@ -100,7 +101,6 @@ def choose_from_menu(lst: list):
 
 def hello():
     return print("Hello! Enter command pls: ")
-
 
 def new_contact():
     while True:

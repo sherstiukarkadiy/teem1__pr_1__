@@ -1,15 +1,16 @@
 import re
 from datetime import datetime
+from abc import ABC,abstractmethod
 
 
-class Field:
+class Field(ABC):
     def __init__(self, value):
         self.__value = value
-
+        
     @property
     def value(self):
         return self.__value
-
+    
     @value.setter
     def value(self, new_value):
         self.__value = new_value
@@ -50,9 +51,21 @@ class Phone(Field):
     @correct_phone.setter
     def correct_phone(self, phone: str | object) -> None:
         phone = str(phone)
-        if phone_check(phone):
+        if self._phone_check(phone):
             raise ValueError(f'Phone {phone} is not right, must be only numbers')
         super().__init__(phone)
+    
+    def _phone_check(self, phone_number):
+
+        if phone_number.startswith("+"):
+            phone_number = phone_number[1:]
+
+        not_number = re.search(r'\D', phone_number)
+
+        if not_number:
+            return True
+        else:
+            return False
 
 
 class Email(Field):
@@ -66,9 +79,20 @@ class Email(Field):
     @correct_email.setter
     def correct_email(self, email: str | object) -> None:
         email = str(email)
-        if email_check(email):
+        if self._email_check(email):
             raise ValueError("Invalid email format. Please, write in format 'mail@mail.com'")
         super().__init__(email)
+    
+    def _email_check(self, email: str) -> bool:
+        # Check correct email
+        reg = r"[a-z]\w+@([a-z]{2,}\.)+[a-z]{2,}\b"
+        email = re.search(reg, email)
+
+        if not email:
+            return True
+        else:
+            return False
+
 
 
 class Birthday(Field):
@@ -82,7 +106,7 @@ class Birthday(Field):
     @correct_birthday.setter
     def correct_birthday(self, date: str | object) -> None:
         date = str(date)
-        date = birthday_check(date)
+        date = self._birthday_check(date)
         if not date:
             raise ValueError("Invalid birthday format. Try firstly DAY, secondly MONTH, lastly YEARS")
         else:
@@ -93,48 +117,31 @@ class Birthday(Field):
             return self.value.strftime("%d.%m.%Y")
         else:
             return self.value
+        
+    def _birthday_check(self,date: str) -> bool:
+        splitters = [".", ",", "/", "-", ";", ":", "_"]
+        for sign in splitters:
+            date = date.replace(sign, " ")
 
+        __match = re.match(r"\d{2} \d{2} \d{4}\b", date)
+        if not __match:
+            return False
 
-def phone_check(phone_number):
+        day, month, year = map(int, date.split())
 
-    if phone_number.startswith("+"):
-        phone_number = phone_number[1:]
+        try:
+            birthday = datetime(year, month, day)
+            return birthday
 
-    not_number = re.search(r'\D', phone_number)
-
-    if not_number:
-        return True
-    else:
-        return False
-
-
-def email_check(email: str) -> bool:
-    # Check correct email
-    reg = r"[a-z]\w+@([a-z]{2,}\.)+[a-z]{2,}\b"
-    email = re.search(reg, email)
-
-    if not email:
-        return True
-    else:
-        return False
-
-
-def birthday_check(date: str):
-    splitters = [".", ",", "/", "-", ";", ":", "_"]
-    for sign in splitters:
-        date = date.replace(sign, " ")
-
-    __match = re.match(r"\d{2} \d{2} \d{4}\b", date)
-    if not __match:
-        return False
-
-    day, month, year = map(int, date.split())
-
-    try:
-        birthday = datetime(year, month, day)
-        return birthday
-
-    except:
-        return False
+        except:
+            return False
+        
+    def days_to_birthday(self) -> int:
+        today = datetime.today()
+        next_birthday = datetime(today.year, self.value.month, self.value.day)
+        if next_birthday < today:
+            next_birthday = datetime(today.year + 1, self.value.month, self.value.day)
+        return (next_birthday - today).days
+    
 
 

@@ -1,2 +1,3 @@
 include src/subordinate/Contacts.csv
 include src/subordinate/Notes.json
+include src/subordinate/Logo2.png
